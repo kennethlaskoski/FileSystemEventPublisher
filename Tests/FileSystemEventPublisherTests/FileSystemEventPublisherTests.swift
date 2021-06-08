@@ -1,11 +1,19 @@
-    import XCTest
-    @testable import FileSystemEventPublisher
+import XCTest
+@testable import FileSystemEventPublisher
 
-    final class FileSystemEventPublisherTests: XCTestCase {
-        func testExample() {
-            // This is an example of a functional test case.
-            // Use XCTAssert and related functions to verify your tests produce the correct
-            // results.
-          XCTAssertEqual(self, self)
-        }
+@available(iOS 14.0, *)
+let File = FileManager.default.temporaryDirectory
+
+@available(macOS 11.0, *, iOS 14.0, *)
+final class FileSystemEventPublisherTests: XCTestCase {
+  func test() {
+    let cancellable = DispatchSource.publish(
+      .all,
+      for: FileManager.default.temporaryDirectory
+    ).receive(on: RunLoop.main).sink { event in
+      print(event)
     }
+    cancellable.cancel()
+    XCTAssertEqual(self, self)
+  }
+}

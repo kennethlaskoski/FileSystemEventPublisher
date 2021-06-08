@@ -9,7 +9,7 @@ import System
 import Combine
 import Foundation
 
-@available(iOS 14.0, *)
+@available(macOS 11.0, *, iOS 14.0, *)
 private extension DispatchSource {
   class Subscription<Target: Subscriber>: Combine.Subscription where Target.Input == FileSystemEvent {
     var target: Target?
@@ -44,7 +44,7 @@ private extension DispatchSource {
   }
 }
 
-@available(iOS 14.0, *)
+@available(macOS 11.0, *, iOS 14.0, *)
 extension DispatchSource {
   private static let queue = DispatchQueue(label: "br.com.tractrix.FileSystemEventPublisher", qos: .userInitiated, attributes: .concurrent)
   static func publish(_ events: FileSystemEvent, for url: URL) -> FileSystemEventPublisher {
