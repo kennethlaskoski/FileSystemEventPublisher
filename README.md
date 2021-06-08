@@ -7,7 +7,9 @@ Example usage:
     let cancellable = DispatchSource.publish(
       .all,
       for: FileManager.default.temporaryDirectory
-    ).receive(on: RunLoop.main).sink { event in
+    )
+    .receive(on: RunLoop.main)
+    .sink { event in
       print(event)
     }
     //.
