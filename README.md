@@ -1,3 +1,3 @@
 # FileSystemEventPublisher
 
-A description of this package.
+A publisher that tracks changes in the file system.
