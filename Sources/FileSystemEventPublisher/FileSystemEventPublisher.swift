@@ -47,13 +47,14 @@ private extension DispatchSource {
 @available(macOS 11.0, *, iOS 14.0, *)
 extension DispatchSource {
   private static let queue = DispatchQueue(label: "br.com.tractrix.FileSystemEventPublisher", qos: .userInitiated, attributes: .concurrent)
-  static func publish(_ events: FileSystemEvent, for url: URL) -> FileSystemEventPublisher {
+
+  public static func publish(_ events: FileSystemEvent, for url: URL) -> FileSystemEventPublisher {
     FileSystemEventPublisher(of: events, for: url)
   }
 
-  struct FileSystemEventPublisher: Publisher {
-    typealias Output = FileSystemEvent
-    typealias Failure = Never
+  public struct FileSystemEventPublisher: Publisher {
+    public typealias Output = FileSystemEvent
+    public typealias Failure = Never
 
     let url: URL
     let eventSet: FileSystemEvent
@@ -63,7 +64,7 @@ extension DispatchSource {
       self.eventSet = events
     }
 
-    func receive<S>(subscriber: S) where S : Subscriber, S.Failure == Never, S.Input == FileSystemEvent {
+    public func receive<S>(subscriber: S) where S : Subscriber, S.Failure == Never, S.Input == FileSystemEvent {
       let subscription = Subscription<S>(of: eventSet, for: url, on: queue)
       subscription.target = subscriber
       subscriber.receive(subscription: subscription)
