@@ -29,6 +29,7 @@ private extension DispatchSource {
         try? fd.close()
         self.source = nil
       }
+      source.resume()
     }
 
     func request(_ demand: Subscribers.Demand) {}
