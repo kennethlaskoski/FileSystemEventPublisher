@@ -12,22 +12,42 @@ import Foundation
 
 @available(macOS 11.0, *, iOS 14.0, *)
 private extension DispatchSource {
+  static let queue = DispatchQueue(label: "br.com.tractrix.FileSystemEventPublisher", qos: .userInitiated, attributes: .concurrent)
+
+  struct FileSystemEventPublisher: Publisher {
+    public typealias Output = FileSystemEvent
+    public typealias Failure = Never
+
+    let file: FileDescriptor
+    let mask: FileSystemEvent
+
+    init(of events: FileSystemEvent, at fd: FileDescriptor) {
+      file = fd
+      mask = events
+    }
+
+    public func receive<S>(subscriber: S) where S : Subscriber, S.Failure == Never, S.Input == FileSystemEvent {
+      let subscription = Subscription<S>(of: mask, at: file, on: queue)
+      subscription.target = subscriber
+      subscriber.receive(subscription: subscription)
+    }
+  }
+
   class Subscription<Target: Subscriber>: Combine.Subscription where Target.Input == FileSystemEvent {
     var target: Target?
 
     private var source: DispatchSourceFileSystemObject!
-    init(of eventMask: FileSystemEvent, for url: URL, on queue: DispatchQueue) {
-      let fd = try! FileDescriptor.open(url.path, .readOnly, options: .eventOnly)
+    init(of events: FileSystemEvent, at file: FileDescriptor, on queue: DispatchQueue) {
       source = DispatchSource.makeFileSystemObjectSource(
-        fileDescriptor: fd.rawValue,
-        eventMask: eventMask,
+        fileDescriptor: file.rawValue,
+        eventMask: events,
         queue: queue
       )
       source.setEventHandler {
         self.trigger(event: self.source.data)
       }
       source.setCancelHandler {
-        try? fd.close()
+        try? file.close()
         self.source = nil
       }
       source.resume()
@@ -48,28 +68,7 @@ private extension DispatchSource {
 
 @available(macOS 11.0, *, iOS 14.0, *)
 extension DispatchSource {
-  private static let queue = DispatchQueue(label: "br.com.tractrix.FileSystemEventPublisher", qos: .userInitiated, attributes: .concurrent)
-
-  public static func publish(_ events: FileSystemEvent, for url: URL) -> FileSystemEventPublisher {
-    FileSystemEventPublisher(of: events, for: url)
-  }
-
-  public struct FileSystemEventPublisher: Publisher {
-    public typealias Output = FileSystemEvent
-    public typealias Failure = Never
-
-    let url: URL
-    let eventSet: FileSystemEvent
-
-    init(of events: FileSystemEvent, for url: URL) {
-      self.url = url
-      self.eventSet = events
-    }
-
-    public func receive<S>(subscriber: S) where S : Subscriber, S.Failure == Never, S.Input == FileSystemEvent {
-      let subscription = Subscription<S>(of: eventSet, for: url, on: queue)
-      subscription.target = subscriber
-      subscriber.receive(subscription: subscription)
-    }
+  public static func publish(_ events: FileSystemEvent, at fd: FileDescriptor) -> AnyPublisher<FileSystemEvent, Never> {
+    FileSystemEventPublisher(of: events, at: fd).eraseToAnyPublisher()
   }
 }
