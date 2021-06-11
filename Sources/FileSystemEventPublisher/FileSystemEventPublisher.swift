@@ -12,11 +12,13 @@ import Foundation
 
 @available(macOS 11.0, *, iOS 14.0, *)
 private extension DispatchSource {
-  static let queue = DispatchQueue(label: "br.com.tractrix.FileSystemEventPublisher", qos: .userInitiated, attributes: .concurrent)
 
+  /// The file system event publisher.
   struct FileSystemEventPublisher: Publisher {
-    public typealias Output = FileSystemEvent
-    public typealias Failure = Never
+    private static let queue = DispatchQueue(label: "br.com.tractrix.FileSystemEventPublisher", qos: .userInitiated, attributes: .concurrent)
+
+    typealias Output = FileSystemEvent
+    typealias Failure = Never
 
     let file: FileDescriptor
     let mask: FileSystemEvent
@@ -26,13 +28,14 @@ private extension DispatchSource {
       mask = events
     }
 
-    public func receive<S>(subscriber: S) where S : Subscriber, S.Failure == Never, S.Input == FileSystemEvent {
-      let subscription = Subscription<S>(of: mask, at: file, on: queue)
+    func receive<S>(subscriber: S) where S : Subscriber, S.Failure == Never, S.Input == FileSystemEvent {
+      let subscription = Subscription<S>(of: mask, at: file, on: FileSystemEventPublisher.queue)
       subscription.target = subscriber
       subscriber.receive(subscription: subscription)
     }
   }
 
+  /// The subscription to receive file system events
   class Subscription<Target: Subscriber>: Combine.Subscription where Target.Input == FileSystemEvent {
     var target: Target?
 
@@ -68,7 +71,12 @@ private extension DispatchSource {
 
 @available(macOS 11.0, *, iOS 14.0, *)
 extension DispatchSource {
-  public static func publish(_ events: FileSystemEvent, at fd: FileDescriptor) -> AnyPublisher<FileSystemEvent, Never> {
+  /// Creates a new publisher for monitoring file-system events.
+  /// - Parameters:
+  ///   - events: The set of events to monitor. For a list of possible values, see DispatchSource.FileSystemEvent.
+  ///   - fd: A file descriptor pointing to an open file or socket.
+  /// - Returns: a publisher that triggers when events occur on the observed file
+  public static func publish(_ events: FileSystemEvent = .all, at fd: FileDescriptor) -> AnyPublisher<FileSystemEvent, Never> {
     FileSystemEventPublisher(of: events, at: fd).eraseToAnyPublisher()
   }
 }
