@@ -3,6 +3,7 @@
 //  FileSystemEventPublisher
 //
 //  Created by Kenneth Laskoski on 14/05/21.
+//  Dedicated to Elisa Degrazia Xerxenesky
 //
 
 import System
