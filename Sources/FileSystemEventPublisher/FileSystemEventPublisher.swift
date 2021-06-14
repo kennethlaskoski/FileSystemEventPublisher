@@ -71,11 +71,11 @@ private extension DispatchSource {
 
 @available(macOS 11.0, *, iOS 14.0, *)
 extension DispatchSource {
-  /// Creates a new publisher for monitoring file-system events.
+  /// Creates a new publisher for monitoring file system events.
   /// - Parameters:
-  ///   - events: The set of events to monitor. For a list of possible values, see DispatchSource.FileSystemEvent.
+  ///   - events: The set of events to monitor.
   ///   - fd: A file descriptor pointing to an open file or socket.
-  /// - Returns: a publisher that triggers when events occur on the observed file
+  /// - Returns: A publisher that triggers when events occur at the observed file.
   public static func publish(_ events: FileSystemEvent = .all, at fd: FileDescriptor) -> AnyPublisher<FileSystemEvent, Never> {
     FileSystemEventPublisher(of: events, at: fd).eraseToAnyPublisher()
   }
