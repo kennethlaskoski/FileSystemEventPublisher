@@ -20,8 +20,8 @@ private extension DispatchSource {
     typealias Output = FileSystemEvent
     typealias Failure = Never
 
-    let file: FileDescriptor
-    let mask: FileSystemEvent
+    private let file: FileDescriptor
+    private let mask: FileSystemEvent
 
     init(of events: FileSystemEvent, at fd: FileDescriptor) {
       file = fd
@@ -36,7 +36,7 @@ private extension DispatchSource {
   }
 
   /// The subscription to receive file system events
-  class Subscription<Target: Subscriber>: Combine.Subscription where Target.Input == FileSystemEvent {
+  final class Subscription<Target: Subscriber>: Combine.Subscription where Target.Input == FileSystemEvent {
     var target: Target?
 
     private var source: DispatchSourceFileSystemObject!
