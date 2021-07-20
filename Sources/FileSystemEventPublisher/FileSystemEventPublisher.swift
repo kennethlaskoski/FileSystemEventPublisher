@@ -10,12 +10,16 @@ import System
 import Combine
 import Foundation
 
-@available(macOS 11.0, *, iOS 14.0, *)
+@available(macOS 11.0, iOS 14.0, *)
 private extension DispatchSource {
 
-  /// The file system event publisher.
+  /// A publisher that emits file system events.
   struct FileSystemEventPublisher: Publisher {
-    private static let queue = DispatchQueue(label: "br.com.tractrix.FileSystemEventPublisher", qos: .userInitiated, attributes: .concurrent)
+    private static let queue = DispatchQueue(
+      label: "br.com.tractrix.FileSystemEventPublisher",
+      qos: .userInitiated,
+      attributes: .concurrent
+    )
 
     typealias Output = FileSystemEvent
     typealias Failure = Never
@@ -23,12 +27,12 @@ private extension DispatchSource {
     private let file: FileDescriptor
     private let mask: FileSystemEvent
 
-    init(of events: FileSystemEvent, at fd: FileDescriptor) {
-      file = fd
-      mask = events
+    init(of eventMask: FileSystemEvent, at fileDescriptor: FileDescriptor) {
+      file = fileDescriptor
+      mask = eventMask
     }
 
-    func receive<S>(subscriber: S) where S : Subscriber, S.Failure == Never, S.Input == FileSystemEvent {
+    func receive<S>(subscriber: S) where S: Subscriber, S.Failure == Never, S.Input == FileSystemEvent {
       let subscription = Subscription<S>(of: mask, at: file, on: FileSystemEventPublisher.queue)
       subscription.target = subscriber
       subscriber.receive(subscription: subscription)
@@ -69,14 +73,19 @@ private extension DispatchSource {
   }
 }
 
-@available(macOS 11.0, *, iOS 14.0, *)
+@available(macOS 11.0, iOS 14.0, *)
 extension DispatchSource {
+  ///
   /// Creates a new publisher for monitoring file system events.
+  ///
   /// - Parameters:
-  ///   - events: The set of events to monitor.
-  ///   - fd: A file descriptor pointing to an open file or socket.
-  /// - Returns: A publisher that triggers when events occur at the observed file.
-  public static func publish(_ events: FileSystemEvent = .all, at fd: FileDescriptor) -> AnyPublisher<FileSystemEvent, Never> {
-    FileSystemEventPublisher(of: events, at: fd).eraseToAnyPublisher()
+  ///   - eventMask: The set of events you want to monitor. For a list of possible values,
+  ///   see [DispatchSource.FileSystemEvent](https://developer.apple.com/documentation/dispatch/dispatchsource/filesystemevent).
+  ///   - fileDescriptor: A file descriptor pointing to an open file or socket.
+  ///
+  /// - Returns: A publisher that emits events occurring at the observed file.
+  ///
+  public static func publish(_ eventMask: FileSystemEvent = .all, at fileDescriptor: FileDescriptor) -> AnyPublisher<FileSystemEvent, Never> {
+    FileSystemEventPublisher(of: eventMask, at: fileDescriptor).eraseToAnyPublisher()
   }
 }

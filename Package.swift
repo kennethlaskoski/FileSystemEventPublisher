@@ -6,19 +6,23 @@ import PackageDescription
 let package = Package(
   name: "FileSystemEventPublisher",
   platforms: [
+    .macOS(.v11),
     .iOS(.v14),
   ],
   products: [
     .library(
       name: "FileSystemEventPublisher",
-      targets: ["FileSystemEventPublisher"]),
+      targets: ["FileSystemEventPublisher"]
+    ),
   ],
   targets: [
     .target(
       name: "FileSystemEventPublisher",
-      dependencies: []),
+      dependencies: []
+    ),
     .testTarget(
       name: "FileSystemEventPublisherTests",
-      dependencies: ["FileSystemEventPublisher"]),
+      dependencies: ["FileSystemEventPublisher"]
+    ),
   ]
 )

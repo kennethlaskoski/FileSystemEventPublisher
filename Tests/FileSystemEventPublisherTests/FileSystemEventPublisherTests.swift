@@ -2,36 +2,29 @@ import System
 import XCTest
 @testable import FileSystemEventPublisher
 
-@available(iOS 14.0, *)
-let File = FileManager.default.temporaryDirectory
-
 @available(macOS 11.0, *, iOS 14.0, *)
 final class FileSystemEventPublisherTests: XCTestCase {
   func testReceive() {
-    let tmp = FileManager.default.temporaryDirectory
-    let expectation = self.expectation(description: "receive")
+    let id = UUID()
+    let tmpURL = FileManager.default.temporaryDirectory
+    let url = URL(fileURLWithPath: "\(id)", relativeTo: tmpURL)
+    let tmp = try! FileDescriptor.open(tmpURL.path, .readOnly, options: .eventOnly)
 
     var received = DispatchSource.FileSystemEvent()
-    XCTAssertEqual(received.rawValue, 0)
+    XCTAssertTrue(received.isEmpty)
 
-    var fd = try! FileDescriptor.open(tmp.path, .readOnly, options: .eventOnly)
-    XCTAssertEqual(close(fd.rawValue), 0)
+    let expectation = self.expectation(description: "receive")
+    let cancellable = DispatchSource.publish(at: tmp)
+      .sink { event in
+        received = event
+        expectation.fulfill()
+      }
 
-    fd = try! FileDescriptor.open(tmp.path, .readOnly, options: .eventOnly)
+    XCTAssertNoThrow(try FileManager.default.createDirectory(at: url, withIntermediateDirectories: false, attributes: nil))
+    waitForExpectations(timeout: 0.01)
 
-    let cancellable = DispatchSource.publish(
-      .all,
-      at: fd
-    ).sink { event in
-      received = event
-      expectation.fulfill()
-    }
+    XCTAssertTrue(received.contains(.write))
 
-    let url = URL(fileURLWithPath: "\(UUID())", relativeTo: tmp)
-    try! FileManager.default.createDirectory(at: url, withIntermediateDirectories: false, attributes: nil)
-
-    waitForExpectations(timeout: 0.1, handler: nil)
-    XCTAssertNotEqual(received.rawValue, 0)
     cancellable.cancel()
   }
 }
