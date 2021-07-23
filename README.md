@@ -1,6 +1,6 @@
 # FileSystemEventPublisher
 
-A publisher that tracks changes in the file system.
+A publisher that emits events in the file system.
 
 Example usage:
 
