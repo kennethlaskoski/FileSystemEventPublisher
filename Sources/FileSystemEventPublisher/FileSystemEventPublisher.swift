@@ -13,7 +13,7 @@ import Foundation
 @available(macOS 11.0, iOS 14.0, *)
 private extension DispatchSource {
 
-  /// A publisher that emits file system events.
+  /// A publisher that emits events in the file system.
   struct FileSystemEventPublisher: Publisher {
     private static let queue = DispatchQueue(
       label: "br.com.tractrix.FileSystemEventPublisher",
