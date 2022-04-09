@@ -11,7 +11,7 @@ var received = DispatchSource.FileSystemEvent()
 
 print(received)     // prints "FileSystemEvent(rawValue: 0)"
 
-let cancellable = DispatchSource.publish(at: tmp)
+let cancellable = FileSystemEventPublisher.publish(at: tmp)
   .sink { event in
     received = event
   }

@@ -10,37 +10,26 @@ import System
 import Combine
 import Foundation
 
-@available(macOS 11.0, iOS 14.0, *)
-private extension DispatchSource {
+//@available(macOS 11.0, iOS 14.0, *)
 
-  /// A publisher that emits events in the file system.
-  struct FileSystemEventPublisher: Publisher {
-    private static let queue = DispatchQueue(
-      label: "br.com.tractrix.FileSystemEventPublisher",
-      qos: .userInitiated,
-      attributes: .concurrent
-    )
-
-    typealias Output = FileSystemEvent
-    typealias Failure = Never
-
-    private let file: FileDescriptor
-    private let mask: FileSystemEvent
-
-    init(of eventMask: FileSystemEvent, at fileDescriptor: FileDescriptor) {
-      file = fileDescriptor
-      mask = eventMask
-    }
-
-    func receive<S>(subscriber: S) where S: Subscriber, S.Failure == Never, S.Input == FileSystemEvent {
-      let subscription = Subscription<S>(of: mask, at: file, on: FileSystemEventPublisher.queue)
-      subscription.target = subscriber
-      subscriber.receive(subscription: subscription)
-    }
+/// A publisher that emits events in the file system.
+public struct FileSystemEventPublisher: Publisher {
+  ///
+  /// Creates a new publisher for monitoring file system events.
+  ///
+  /// - Parameters:
+  ///   - eventMask: The set of events you want to monitor. For a list of possible values,
+  ///   see [DispatchSource.FileSystemEvent](https://developer.apple.com/documentation/dispatch/dispatchsource/filesystemevent).
+  ///   - fileDescriptor: A file descriptor pointing to an open file or socket.
+  ///
+  /// - Returns: A publisher that emits events occurring at the observed file.
+  ///
+  public static func publish(_ eventMask: FileSystemEvent = .all, at fileDescriptor: FileDescriptor) -> AnyPublisher<FileSystemEvent, Never> {
+    FileSystemEventPublisher(of: eventMask, at: fileDescriptor).eraseToAnyPublisher()
   }
 
   /// The subscription to receive file system events
-  final class Subscription<Target: Subscriber>: Combine.Subscription where Target.Input == FileSystemEvent {
+  private final class Subscription<Target: Subscriber>: Combine.Subscription where Target.Input == FileSystemEvent {
     var target: Target?
 
     private var source: DispatchSourceFileSystemObject!
@@ -71,21 +60,28 @@ private extension DispatchSource {
       _ = target?.receive(event)
     }
   }
-}
 
-@available(macOS 11.0, iOS 14.0, *)
-extension DispatchSource {
-  ///
-  /// Creates a new publisher for monitoring file system events.
-  ///
-  /// - Parameters:
-  ///   - eventMask: The set of events you want to monitor. For a list of possible values,
-  ///   see [DispatchSource.FileSystemEvent](https://developer.apple.com/documentation/dispatch/dispatchsource/filesystemevent).
-  ///   - fileDescriptor: A file descriptor pointing to an open file or socket.
-  ///
-  /// - Returns: A publisher that emits events occurring at the observed file.
-  ///
-  public static func publish(_ eventMask: FileSystemEvent = .all, at fileDescriptor: FileDescriptor) -> AnyPublisher<FileSystemEvent, Never> {
-    FileSystemEventPublisher(of: eventMask, at: fileDescriptor).eraseToAnyPublisher()
+  public typealias FileSystemEvent = DispatchSource.FileSystemEvent
+  public typealias Output = FileSystemEvent
+  public typealias Failure = Never
+
+  private static let queue = DispatchQueue(
+    label: "br.com.tractrix.FileSystemEventPublisher",
+    qos: .userInitiated,
+    attributes: .concurrent
+  )
+
+  private let file: FileDescriptor
+  private let mask: FileSystemEvent
+
+  private init(of eventMask: FileSystemEvent, at fileDescriptor: FileDescriptor) {
+    file = fileDescriptor
+    mask = eventMask
+  }
+
+  public func receive<S>(subscriber: S) where S: Subscriber, S.Failure == Never, S.Input == FileSystemEvent {
+    let subscription = Subscription<S>(of: mask, at: file, on: FileSystemEventPublisher.queue)
+    subscription.target = subscriber
+    subscriber.receive(subscription: subscription)
   }
 }
