@@ -8,6 +8,9 @@ The FileSystemEventPublisher framework wraps a [Combine Publisher](https://devel
 around a [DispatchSourceFileSystemObject](https://developer.apple.com/documentation/dispatch/dispatchsourcefilesystemobject), providing a
 modern high-level interface to an efficient way of monitoring filesystem events.
 
+The publisher is created by a function, with a mask defining events of interest and a file descriptor as parameters.
+This function is the only exposed interface, the Copmbine framework provides all remaining functionality.
+
 ## Topics
 
 ### <!--@START_MENU_TOKEN@-->Group<!--@END_MENU_TOKEN@-->
