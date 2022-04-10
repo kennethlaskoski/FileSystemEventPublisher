@@ -4,7 +4,9 @@ A publisher that emits events in the file system.
 
 ## Overview
 
-<!--@START_MENU_TOKEN@-->Text<!--@END_MENU_TOKEN@-->
+The FileSystemEventPublisher framework wraps a [Combine Publisher](https://developer.apple.com/documentation/combine/publisher)
+around a [DispatchSourceFileSystemObject](https://developer.apple.com/documentation/dispatch/dispatchsourcefilesystemobject), providing a
+modern high-level interface to an efficient way of monitoring filesystem events.
 
 ## Topics
 
