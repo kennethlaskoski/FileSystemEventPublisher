@@ -14,7 +14,7 @@ final class FileSystemEventPublisherTests: XCTestCase {
     XCTAssertTrue(received.isEmpty)
 
     let expectation = self.expectation(description: "receive")
-    let cancellable = publish(.all, at: tmp)
+    let cancellable = FileSystemEventPublisher.monitor(tmp, for: .all)
       .sink { event in
         received = event
         expectation.fulfill()
