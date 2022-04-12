@@ -26,13 +26,13 @@ public typealias Event = DispatchSource.FileSystemEvent
 /// - Returns: A publisher that emits events occurring at the observed file.
 ///
 public func monitor(_ fileDescriptor: FileDescriptor, for eventMask: Event) -> AnyPublisher<Event, Never> {
-  Monitor(fileDescriptor, for: eventMask).eraseToAnyPublisher()
+  FileSystemMonitor(fileDescriptor, for: eventMask).eraseToAnyPublisher()
 }
 
 //@available(macOS 11.0, iOS 14.0, *)
 
 /// A publisher that emits events in the file system.
-private struct Monitor: Publisher {
+private struct FileSystemMonitor: Publisher {
   typealias Output = Event
   typealias Failure = Never
 
@@ -51,7 +51,7 @@ private struct Monitor: Publisher {
   }
 
   func receive<S>(subscriber: S) where S: Subscriber, S.Failure == Never, S.Input == Event {
-    let subscription = Subscription<S>(of: mask, at: file, on: Monitor.queue)
+    let subscription = Subscription<S>(of: mask, at: file, on: FileSystemMonitor.queue)
     subscription.target = subscriber
     subscriber.receive(subscription: subscription)
   }
