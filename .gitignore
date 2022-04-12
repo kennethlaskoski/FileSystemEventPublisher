@@ -5,8 +5,3 @@
 xcuserdata/
 DerivedData/
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
-_site
-.sass-cache
-.jekyll-cache
-.jekyll-metadata
-vendor

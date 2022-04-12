@@ -7,11 +7,11 @@ let tmpURL = FileManager.default.temporaryDirectory
 let url = URL(fileURLWithPath: "\(id)", relativeTo: tmpURL)
 let tmp = try! FileDescriptor.open(tmpURL.path, .readOnly, options: .eventOnly)
 
-var received = DispatchSource.FileSystemEvent()
+var received = FileSystemEventPublisher.Event()
 
 print(received)     // prints "FileSystemEvent(rawValue: 0)"
 
-let cancellable = DispatchSource.publish(at: tmp)
+let cancellable = FileSystemEventPublisher.monitor(tmp, for: .all)
   .sink { event in
     received = event
   }

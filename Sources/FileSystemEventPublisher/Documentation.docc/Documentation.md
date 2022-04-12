@@ -21,4 +21,12 @@ This type is also the Output of the created publisher, i.e., the type of values 
 
 The second parameter is a [FileDescriptor](https://developer.apple.com/documentation/system/filedescriptor) pointing to an open file, folder or socket.
 
-The package includes a playground with a short example code.
+## Topics
+
+### Values
+
+- ``Event``
+
+### Creating a publisher
+
+- ``monitor(_:for:)``

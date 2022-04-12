@@ -10,20 +10,20 @@ final class FileSystemEventPublisherTests: XCTestCase {
     let url = URL(fileURLWithPath: "\(id)", relativeTo: tmpURL)
     let tmp = try! FileDescriptor.open(tmpURL.path, .readOnly, options: .eventOnly)
 
-    var received = DispatchSource.FileSystemEvent()
-    XCTAssertTrue(received.isEmpty)
+    var event = Event()
+    XCTAssertTrue(event.isEmpty)
 
-    let expectation = self.expectation(description: "receive")
-    let cancellable = DispatchSource.publish(at: tmp)
-      .sink { event in
-        received = event
+    let expectation = self.expectation(description: "Receive filesystem event")
+    let cancellable = monitor(tmp, for: .all)
+      .sink {
+        event = $0
         expectation.fulfill()
       }
 
     XCTAssertNoThrow(try FileManager.default.createDirectory(at: url, withIntermediateDirectories: false, attributes: nil))
-    waitForExpectations(timeout: 0.01)
+    waitForExpectations(timeout: Double.leastNonzeroMagnitude)
 
-    XCTAssertTrue(received.contains(.write))
+    XCTAssertTrue(event.contains(.write))
 
     cancellable.cancel()
   }
