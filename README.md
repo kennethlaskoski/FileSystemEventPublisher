@@ -1,32 +1,24 @@
-# FileSystemEventPublisher
+# ``FileSystemEventPublisher``
+
 A publisher that emits events in the file system.
 
-[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fkennethlaskoski%2FFileSystemEventPublisher%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/kennethlaskoski/FileSystemEventPublisher)
-[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fkennethlaskoski%2FFileSystemEventPublisher%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/kennethlaskoski/FileSystemEventPublisher)
+## Overview
 
+The FileSystemEventPublisher framework wraps a [Combine Publisher](https://developer.apple.com/documentation/combine/publisher)
+around a [DispatchSourceFileSystemObject](https://developer.apple.com/documentation/dispatch/dispatchsourcefilesystemobject), 
+providing a modern high-level interface to an efficient way of monitoring filesystem events.
 
-## Example usage:
+## Usage
 
-```
-let id = UUID()
-let tmpURL = FileManager.default.temporaryDirectory
-let url = URL(fileURLWithPath: "\(id)", relativeTo: tmpURL)
-let tmp = try! FileDescriptor.open(tmpURL.path, .readOnly, options: .eventOnly)
+A typealias and a function are all the exposed interface, the Combine framework provides all remaining functionality.
 
-var received = DispatchSource.FileSystemEvent()
+The publisher is created by a function with two parameters: a file and a set of events; this signature reflects the
+underlying DispatchSource interface and was adopted for it's simplicity and performance.
 
-print(received)     // prints "FileSystemEvent(rawValue: 0)"
+The first parameter is a mask containing events of interest. The set of events are defined by a typealias to 
+[DispatchSoutce.FileSystemEvent](https://developer.apple.com/documentation/dispatch/dispatchsource/filesystemevent).
+This type is also the Output of the created publisher, i.e., the type of values to be delivered to subscribers.
 
-let cancellable = DispatchSource.publish(at: tmp)
-  .sink { event in
-    received = event
-  }
+The second parameter is a [FileDescriptor](https://developer.apple.com/documentation/system/filedescriptor) pointing to an open file, folder or socket.
 
-try! FileManager.default.createDirectory(at: url, withIntermediateDirectories: false, attributes: nil)
-    
-sleep(1)
-
-print(received)     // prints "FileSystemEvent(rawValue: 18)"
-
-cancellable.cancel()
-```
+The package includes a playground with a short example code.
