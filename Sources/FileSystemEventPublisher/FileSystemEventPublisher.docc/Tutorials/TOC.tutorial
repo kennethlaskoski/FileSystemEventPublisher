@@ -1,0 +1,15 @@
+@Tutorials(name: "FileSystemEventPublisher") {
+    @Intro(title: "File System Monitoring with Combine") {
+        This tutorial demonstrates how to create and use a Combine Publisher to monitor events in the file system.
+    }
+
+    @Chapter(name: "Monitor a Folder") {
+        How to create a publisher and monitor a folder.
+        @TutorialReference(tutorial: "doc:MonitorFolder")
+    }
+
+    @Chapter(name: "Monitor a File") {
+        How to create a publisher and monitor a file.
+        @TutorialReference(tutorial: "doc:MonitorFile")
+    }
+}

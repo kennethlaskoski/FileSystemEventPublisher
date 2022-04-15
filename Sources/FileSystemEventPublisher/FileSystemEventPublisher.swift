@@ -10,12 +10,9 @@ import System
 import Combine
 import Foundation
 
-///
 /// Events involving a change to a file system object.
-///
 public typealias Event = DispatchSource.FileSystemEvent
 
-///
 /// Creates a new publisher for monitoring file system events.
 ///
 /// - Parameters:
@@ -24,7 +21,6 @@ public typealias Event = DispatchSource.FileSystemEvent
 ///   see [DispatchSource.FileSystemEvent](https://developer.apple.com/documentation/dispatch/dispatchsource/filesystemevent).
 ///
 /// - Returns: A publisher that emits events occurring at the observed file.
-///
 public func monitor(_ fileDescriptor: FileDescriptor, for eventMask: Event) -> AnyPublisher<Event, Never> {
   FileSystemMonitor(fileDescriptor, for: eventMask).eraseToAnyPublisher()
 }
