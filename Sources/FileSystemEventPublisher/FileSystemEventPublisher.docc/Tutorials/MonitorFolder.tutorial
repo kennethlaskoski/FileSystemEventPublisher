@@ -1,66 +1,59 @@
 @Tutorial(time: 10) {
-    @Intro(title: "Monitor a Folder") {
-      How to create a publisher and monitor a file or folder.
+  @Intro(title: "Monitor a Folder") {
+    How to create a publisher and monitor a file or folder.
+  }
+
+  @Section(title: "Opening a folder") {
+    @ContentAndMedia {
+      Let's open a folder we want to monitor
     }
 
-    @Section(title: "Opening a folder") {
-        @ContentAndMedia {
-            Let's open a folder we want to monitor
-        }
-        
-        @Steps {
-            @Step {
-                Get the folder URL
-                
-                @Code(name: "<#display name#>", file: <#filename.swift#>)
-            }
+    @Steps {
+      @Step {
+        Get the temporary folder URL
+        @Code(name: "MonitorFolder.swift", file: 01-01-MonitorFolder.swift)
+      }
 
-            @Step {
-                Open the folder and get a file descriptor
-                
-                @Code(name: "<#display name#>", file: <#filename.swift#>)
-            }
-        }
+      @Step {
+        Open the folder and get a file descriptor
+        @Code(name: "MonitorFolder.swift", file: 01-02-MonitorFolder.swift)
+      }
+    }
+  }
+
+  @Section(title: "Creating a publisher") {
+    @ContentAndMedia {
+      Create a publisher to watch for events
     }
 
-    @Section(title: "Creating a publisher") {
-        @ContentAndMedia {
-             Now we create a publisher to watch for events
-        }
-                
-        @Steps {
-            @Step {
-                Create a publisher
-                
-                @Code(name: "<#display name#>", file: <#filename.swift#>)
-            }
-            
+    @Steps {
+      @Step {
+        Create a publisher
+        @Code(name: "MonitorFolder.swift", file: 01-03-MonitorFolder.swift)
+      }
 
-            @Step {
-                Attach a subscriber
-                
-                @Code(name: "<#display name#>", file: <#filename.swift#>)
-            }
-        }
+      @Step {
+        Attach a subscriber
+        @Code(name: "MonitorFolder.swift", file: 01-04-MonitorFolder.swift)
+      }
+    }
+  }
+
+  @Section(title: "Generating an event") {
+    @ContentAndMedia {
+      Modifying the folder should raise an event
     }
 
-    @Section(title: "Generating an event") {
-        @ContentAndMedia {
-             Modifying the folder should raise an event
-        }
-                    
-        @Steps {
-            @Step {
-                Create a new file
-                
-                @Code(name: "<#display name#>", file: <#filename.swift#>)
-            }
+    @Steps {
+      @Step {
+        Create a new folder inside tmp
+        @Code(name: "MonitorFolder.swift", file: 01-05-MonitorFolder.swift)
+      }
 
-            @Step {
-                Check for changes
-                
-                @Code(name: "<#display name#>", file: <#filename.swift#>)
-            }
-        }
+      @Step {
+        Check for changes
+        @Code(name: "MonitorFolder.swift", file: 01-06-MonitorFolder.swift)
+      }
     }
+  }
 }
