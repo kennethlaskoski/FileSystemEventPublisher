@@ -4,25 +4,26 @@ jobs:
   test:
     macos:
       xcode: 13.4.0
-
     steps:
       - checkout
-      - run: xcodebuild test -scheme FileSystemEventPublisher -destination 'platform=macOS,arch=x86_64'
-  
+      - run:
+          name: Run Unit Tests
+          command: xcodebuild test -scheme FileSystemEventPublisher -destination 'platform=macOS,arch=x86_64'
+
   build:
     macos:
       xcode: 13.4.0
-
     steps:
-      # Commands will execute in macOS container
-      # with Xcode 12.5.1 installed
       - checkout
-      - run: xcodebuild -scheme FileSystemEventPublisher -destination 'platform=macOS,arch=x86_64'
+      - run:
+          name: Build Application
+          command: xcodebuild -scheme FileSystemEventPublisher -destination 'platform=macOS,arch=x86_64'
 
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  test-build:
+  test_build:
     jobs:
       - test
-      - build
+      - build:
+          requires:
+            - test
+
