@@ -4,6 +4,7 @@
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fkennethlaskoski%2FFileSystemEventPublisher%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/kennethlaskoski/FileSystemEventPublisher)
 
 [![Swift](https://github.com/kennethlaskoski/FileSystemEventPublisher/actions/workflows/swift.yml/badge.svg)](https://github.com/kennethlaskoski/FileSystemEventPublisher/actions/workflows/swift.yml)
+![GitHub](https://img.shields.io/github/license/kennethlaskoski/filesystemeventpublisher)
 
 A publisher that emits events in the file system.
 
